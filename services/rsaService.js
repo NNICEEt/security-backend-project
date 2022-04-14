@@ -15,8 +15,11 @@ const rsaService = {
       const privateKey = { d, n };
 
       resolve({
-        publicKey: btoa(JSON.stringify(publicKey)),
-        privateKey: btoa(JSON.stringify(privateKey)),
+        keySize,
+        result: {
+          publicKey: btoa(JSON.stringify(publicKey)),
+          privateKey: btoa(JSON.stringify(privateKey)),
+        },
       });
     });
   },
