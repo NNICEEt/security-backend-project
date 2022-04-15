@@ -34,19 +34,19 @@ const vigenereService = {
         key.toUpperCase().charCodeAt(index % key.length)
       );
 
-      let plaintext = "";
+      let plainText = "";
       const lowerCasePos = this.getPos(cipherText);
       textCode.forEach((value, index) => {
         if (value >= 32 && value <= 64) {
-          plaintext += String.fromCharCode(value);
+          plainText += String.fromCharCode(value);
         } else {
           let result = ((value - keyCode[index] + 26) % 26) + 65;
           if (lowerCasePos.includes(index)) result = result + 32;
           result = String.fromCharCode(result);
-          plaintext += result;
+          plainText += result;
         }
       });
-      resolve({ cipherText, key, result: { plaintext } });
+      resolve({ cipherText, key, result: { plainText } });
     });
   },
   getPos(text) {
