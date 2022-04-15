@@ -4,7 +4,7 @@ const railFenceService = require("../../services/railFenceService");
 router.post("/encrypt", async (req, res) => {
   try {
     const { plainText, key } = req.body;
-    const result = await railFenceService.encrypt(plainText, key);
+    const result = await railFenceService.encrypt(plainText, +key);
     res.status(200).json(result);
   } catch (error) {
     res.sendStatus(400);
@@ -14,7 +14,7 @@ router.post("/encrypt", async (req, res) => {
 router.post("/decrypt", async (req, res) => {
   try {
     const { cipherText, key } = req.body;
-    const result = await railFenceService.decrypt(cipherText, key);
+    const result = await railFenceService.decrypt(cipherText, +key);
     res.status(200).json(result);
   } catch (error) {
     res.sendStatus(400);
