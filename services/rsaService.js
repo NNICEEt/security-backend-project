@@ -3,27 +3,31 @@ const bigInt = require("big-integer");
 const rsaService = {
   async generateKey(keySize) {
     return new Promise(async (resolve, reject) => {
-      let publicKey, privateKey;
-      while (true) {
-        const p = this.getRandomPrime(keySize / 2);
-        const q = this.getRandomPrime(keySize / 2);
-        const n = p.multiply(q);
-        const phi = p.prev().multiply(q.prev());
-        let e = this.getRandomPrime(keySize / 8);
-        while (bigInt.gcd(e, phi).notEquals(1))
-          e = this.getRandomPrim(keySize / 8);
-        const d = e.modInv(phi);
-        publicKey = btoa(JSON.stringify({ e, n }));
-        privateKey = btoa(JSON.stringify({ d, n }));
-        if (await this.verify(publicKey, privateKey)) break;
+      try {
+        let publicKey, privateKey;
+        while (true) {
+          const p = this.getRandomPrime(keySize / 2);
+          const q = this.getRandomPrime(keySize / 2);
+          const n = p.multiply(q);
+          const phi = p.prev().multiply(q.prev());
+          let e = this.getRandomPrime(keySize / 8);
+          while (bigInt.gcd(e, phi).notEquals(1))
+            e = this.getRandomPrim(keySize / 8);
+          const d = e.modInv(phi);
+          publicKey = btoa(JSON.stringify({ e, n }));
+          privateKey = btoa(JSON.stringify({ d, n }));
+          if (await this.verify(publicKey, privateKey)) break;
+        }
+        resolve({
+          keySize,
+          result: {
+            publicKey,
+            privateKey,
+          },
+        });
+      } catch (error) {
+        reject(error);
       }
-      resolve({
-        keySize,
-        result: {
-          publicKey,
-          privateKey,
-        },
-      });
     });
   },
   async verify(publicKey, privateKey) {
@@ -38,22 +42,30 @@ const rsaService = {
   },
   async encrypt(plainText, key) {
     return new Promise((resolve, reject) => {
-      const keyObj = JSON.parse(atob(key));
-      const [e, n] = Object.values(keyObj);
-      const m = this.encode(plainText);
-      const c = m.modPow(bigInt(e), bigInt(n));
-      const cipherText = btoa(c);
-      resolve({ plainText, key, result: { cipherText } });
+      try {
+        const keyObj = JSON.parse(atob(key));
+        const [e, n] = Object.values(keyObj);
+        const m = this.encode(plainText);
+        const c = m.modPow(bigInt(e), bigInt(n));
+        const cipherText = btoa(c);
+        resolve({ plainText, key, result: { cipherText } });
+      } catch (error) {
+        reject(error);
+      }
     });
   },
   async decrypt(cipherText, key) {
     return new Promise((resolve, reject) => {
-      const keyObj = JSON.parse(atob(key));
-      const [d, n] = Object.values(keyObj);
-      const c = atob(cipherText);
-      const m = bigInt(c).modPow(bigInt(d), bigInt(n));
-      const plainText = this.decode(m.toString());
-      resolve({ cipherText, key, result: { plainText } });
+      try {
+        const keyObj = JSON.parse(atob(key));
+        const [d, n] = Object.values(keyObj);
+        const c = atob(cipherText);
+        const m = bigInt(c).modPow(bigInt(d), bigInt(n));
+        const plainText = this.decode(m.toString());
+        resolve({ cipherText, key, result: { plainText } });
+      } catch (error) {
+        reject(error);
+      }
     });
   },
   encode(text) {
