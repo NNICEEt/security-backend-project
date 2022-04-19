@@ -4,23 +4,19 @@ const rsaService = {
   async generateKey(keySize) {
     return new Promise(async (resolve, reject) => {
       try {
-        let publicKey, privateKey;
-        (async () => {
-          while (true) {
-            const p = this.getRandomPrime(keySize / 2);
-            const q = this.getRandomPrime(keySize / 2);
-            const n = p.multiply(q);
-            const phi = p.prev().multiply(q.prev());
-            let e = this.getRandomPrime(keySize / 8);
-            while (bigInt.gcd(e, phi).notEquals(1))
-              e = this.getRandomPrim(keySize / 8);
-            const d = e.modInv(phi);
-            publicKey = btoa(JSON.stringify({ e, n }));
-            privateKey = btoa(JSON.stringify({ d, n }));
-            isVerified = await this.verify(publicKey, privateKey);
-            if (isVerified) break;
-          }
-        })();
+        const p = this.getRandomPrime(keySize / 2);
+        const q = this.getRandomPrime(keySize / 2);
+        const n = p.multiply(q);
+        const phi = p.prev().multiply(q.prev());
+        let e = this.getRandomPrime(keySize / 8);
+        while (bigInt.gcd(e, phi).notEquals(1))
+          e = this.getRandomPrim(keySize / 8);
+        const d = e.modInv(phi);
+        const publicKey = btoa(JSON.stringify({ e, n }));
+        const privateKey = btoa(JSON.stringify({ d, n }));
+        isVerified = await this.verify(publicKey, privateKey);
+        if (!isVerified) return await this.generateKey(keySize);
+
         resolve({
           keySize,
           result: {
