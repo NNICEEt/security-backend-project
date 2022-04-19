@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const timeout = require('connect-timeout')
 
 const PORT = process.env.PORT || 8000;
 
