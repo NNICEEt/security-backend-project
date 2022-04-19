@@ -14,8 +14,6 @@ const rsaService = {
         const d = e.modInv(phi);
         const publicKey = btoa(JSON.stringify({ e, n }));
         const privateKey = btoa(JSON.stringify({ d, n }));
-        isVerified = await this.verify(publicKey, privateKey);
-        if (!isVerified) return await this.generateKey(keySize);
 
         resolve({
           keySize,
