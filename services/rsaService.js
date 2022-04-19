@@ -5,7 +5,7 @@ const rsaService = {
     return new Promise(async (resolve, reject) => {
       try {
         let publicKey, privateKey;
-        while (true) {
+        // while (true) {
           const p = this.getRandomPrime(keySize / 2);
           const q = this.getRandomPrime(keySize / 2);
           const n = p.multiply(q);
@@ -16,8 +16,8 @@ const rsaService = {
           const d = e.modInv(phi);
           publicKey = btoa(JSON.stringify({ e, n }));
           privateKey = btoa(JSON.stringify({ d, n }));
-          if (await this.verify(publicKey, privateKey)) break;
-        }
+        //   if (await this.verify(publicKey, privateKey)) break;
+        // }
         resolve({
           keySize,
           result: {
