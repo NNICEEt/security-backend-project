@@ -4,13 +4,13 @@ const rsaService = {
   async generateKey(keySize) {
     return new Promise(async (resolve, reject) => {
       try {
-        const p = this.getRandomPrime(keySize / 2);
-        const q = this.getRandomPrime(keySize / 2);
+        const p = this.getRandomPrime(keySize);
+        const q = this.getRandomPrime(keySize);
         const n = p.multiply(q);
         const phi = p.prev().multiply(q.prev());
-        let e = this.getRandomPrime(keySize / 8);
+        let e = this.getRandomPrime(16);
         while (bigInt.gcd(e, phi).notEquals(1))
-          e = this.getRandomPrim(keySize / 8);
+          e = this.getRandomPrim(16);
         const d = e.modInv(phi);
         const publicKey = btoa(JSON.stringify({ e, n }));
         const privateKey = btoa(JSON.stringify({ d, n }));
@@ -96,7 +96,7 @@ const rsaService = {
     const max = bigInt.one.shiftLeft(bits).prev();
     while (true) {
       const randNo = bigInt.randBetween(min, max);
-      if (randNo.isProbablePrime(256)) {
+      if (randNo.isProbablePrime(8)) {
         return randNo;
       }
     }
